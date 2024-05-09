@@ -1,0 +1,37 @@
+package com.beyondrest.SegreteriaVirtualeREST.pianodistudi;
+
+import com.beyondrest.SegreteriaVirtualeREST.insegnamento.Insegnamento;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import java.util.List;
+
+@Entity
+@Table(name = "piano_di_studi")
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@Getter
+@Setter
+public class PianoDiStudi {
+    @Column(name = "piano_di_studi_id")
+    @JsonIgnore
+    private @Id @GeneratedValue Long id;
+    private String anno;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "piano_di_studi_insegnamento",
+            joinColumns = @JoinColumn(name = "piano_di_studi_id"),
+            inverseJoinColumns = @JoinColumn(name = "insegnamento_id"))
+    @JsonBackReference
+    private List<Insegnamento> insegnamenti;
+
+    public PianoDiStudi(String anno, List<Insegnamento> insegnamenti) {
+        this.anno = anno;
+        this.insegnamenti = insegnamenti;
+    }
+}
