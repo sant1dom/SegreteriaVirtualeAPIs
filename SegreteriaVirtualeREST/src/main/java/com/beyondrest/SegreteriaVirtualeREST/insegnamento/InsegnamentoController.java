@@ -44,14 +44,20 @@ public class InsegnamentoController {
     @Operation(summary = "Get a single insegnamento", description = "Get a single insegnamento by its ID along with its details")
     @GetMapping("/insegnamenti/{id}")
     public EntityModel<Insegnamento> one(@PathVariable @Parameter(description = "ID of the insegnamento", example = "1") Long id) {
-        var insegnamento = repository.findById(id)
-                .orElseThrow(() -> new InsegnamentoNotFoundException(id));
+        var insegnamento = repository.findById(id).orElseThrow(() -> new InsegnamentoNotFoundException(id));
         var insegnamentoModel = EntityModel.of(insegnamento,
                 linkTo(methodOn(InsegnamentoController.class).one(id)).withSelfRel());
-        insegnamento.getDocenti().forEach(doc -> insegnamentoModel.add(linkTo(methodOn(DocenteController.class).one(doc.getId())).withRel("docenti")));
-        insegnamento.getLezioni().forEach(lezione -> insegnamentoModel.add(linkTo(methodOn(LezioneController.class).one(insegnamento.getId(), lezione.getId())).withRel("lezioni")));
-        insegnamento.getBacheca().forEach(messaggio -> insegnamentoModel.add(linkTo(methodOn(MessaggioController.class).one(insegnamento.getId(), messaggio.getId())).withRel("messaggi")));
-        insegnamento.getAppelli().forEach(appello -> insegnamentoModel.add(linkTo(methodOn(AppelloController.class).one(insegnamento.getId(), appello.getId())).withRel("appelli")));
+        insegnamento.getDocenti()
+                .forEach(doc -> insegnamentoModel.add(linkTo(methodOn(DocenteController.class).one(doc.getId())).withRel("docenti")));
+        insegnamento.getLezioni()
+                .forEach(lezione -> insegnamentoModel.add(linkTo(methodOn(LezioneController.class).one(insegnamento.getId(),
+                                                                                            lezione.getId())).withRel("lezioni")));
+        insegnamento.getBacheca()
+                .forEach(messaggio -> insegnamentoModel.add(linkTo(methodOn(MessaggioController.class).one(insegnamento.getId(),
+                                                                                            messaggio.getId())).withRel("messaggi")));
+        insegnamento.getAppelli()
+                .forEach(appello -> insegnamentoModel.add(linkTo(methodOn(AppelloController.class).one(insegnamento.getId(),
+                                                                                            appello.getId())).withRel("appelli")));
         insegnamentoModel.add(linkTo(methodOn(InsegnamentoController.class).all()).withRel("insegnamenti"));
         return insegnamentoModel;
     }

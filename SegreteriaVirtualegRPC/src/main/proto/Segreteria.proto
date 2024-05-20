@@ -1,0 +1,223 @@
+syntax = "proto3";
+option java_package = "com.beyondrest.SegreteriaVirtualegRPC";
+option java_multiple_files = true;
+
+service SegreteriaVirtualeService {
+    // Servizi per i corsi
+    rpc GetCorsi(Empty) returns (CorsiResponse) {}
+    rpc GetCorso(ID) returns (CorsoResponse) {}
+    rpc GetCurricula(ID) returns (CurriculaResponse) {}
+    rpc GetCurriculum(DoubleID) returns (CurriculumResponse) {}
+    rpc GetPiano(GetPianoRequest) returns (PianoResponse) {}
+
+    // Servizi per gli insegnamenti
+    rpc GetInsegnamenti(Empty) returns (InsegnamentiResponse) {}
+    rpc GetInsegnamento(ID) returns (InsegnamentoResponse) {}
+    rpc GetLezioni(ID) returns (LezioniResponse) {}
+    rpc GetLezione(DoubleID) returns (LezioneResponse) {}
+    rpc GetMessaggi(ID) returns (BachecaResponse) {}
+    rpc GetMessaggio(DoubleID) returns (MessaggioResponse) {}
+    rpc GetAppelli(ID) returns (AppelliResponse) {}
+    rpc GetAppello(DoubleID) returns (AppelloResponse) {}
+    rpc RegistraAppello(CreateAppelloRequest) returns (AppelloResponse) {}
+
+    // Servizi per i docenti
+    rpc GetDocenti(Empty) returns (DocentiResponse) {}
+    rpc GetDocente(ID) returns (DocenteResponse) {}
+
+    // Altri servizi
+    rpc Registrazione(RegistrazioneRequest) returns (RegistrazioneResponse) {}
+    rpc Login(LoginRequest) returns (LoginResponse) {}
+    rpc GetLibretto(Empty) returns (LibrettoResponse) {}
+}
+
+
+message Empty {}
+
+message CorsiResponse {
+    repeated Corso corsi = 1;
+}
+
+message CorsoResponse {
+    Corso corso = 1;
+}
+
+message Corso {
+  string id = 1;
+  string nome = 2;
+  string descrizione = 3;
+  string anno = 4;
+}
+
+message Curriculum {
+  string id = 1;
+  string nome = 2;
+  string descrizione = 3;
+}
+
+message CurriculaResponse {
+    repeated Curriculum curricula = 1;
+}
+
+message CurriculumResponse {
+    Curriculum curriculum = 1;
+}
+
+message Piano {
+  string id = 1;
+  string anno = 2;
+  repeated Insegnamento insegnamenti = 3;
+}
+
+message PianoDiStudi {
+  string id = 1;
+  string anno = 2;
+  repeated string insegnamenti = 3;
+}
+
+message PianoResponse {
+    Piano piano = 1;
+}
+
+message Insegnamento {
+  string id = 1;
+  string nome = 2;
+  string descrizione = 3;
+  string cfu = 4;
+  string anno = 5;
+  string orario = 6;
+  repeated string docenti = 7;
+  repeated string lezioni = 8;
+  repeated string appelli = 9;
+  repeated string bacheca = 10;
+  repeated string voti = 11;
+}
+
+message InsegnamentiResponse {
+    repeated Insegnamento insegnamenti = 1;
+}
+
+message InsegnamentoResponse {
+    Insegnamento insegnamento = 1;
+}
+
+message Lezione {
+  string id = 1;
+  string data_ora = 2;
+  string diario = 3;
+  string insegnamento = 4;
+}
+
+message LezioniResponse {
+    repeated Lezione lezioni = 1;
+}
+
+message LezioneResponse {
+    Lezione lezione = 1;
+}
+
+message Messaggio {
+  string id = 1;
+  string data_ora = 2;
+  string titolo = 3;
+  string testo = 4;
+  string autore = 5;
+}
+
+message BachecaResponse {
+    repeated Messaggio bacheca = 1;
+}
+
+message MessaggioResponse {
+    Messaggio messaggio = 1;
+}
+
+message Appello {
+  string id = 1;
+  string data_ora = 2;
+  string aula = 3;
+  string insegnamento = 4;
+  repeated string iscritti = 5;
+}
+
+message AppelliResponse {
+    repeated Appello appelli = 1;
+}
+
+message AppelloResponse {
+    Appello appello = 1;
+}
+
+message CreateAppelloRequest {
+  string id_insegnamento = 1;
+  string id_appello = 2;
+}
+
+message Docente {
+  string id = 1;
+  string nome = 2;
+  string cognome = 3;
+  string email = 4;
+  string telefono = 5;
+  repeated string insegnamenti = 6;
+}
+
+message DocentiResponse {
+    repeated Docente docenti = 1;
+}
+
+message DocenteResponse {
+    Docente docente = 1;
+}
+
+message RegistrazioneRequest {
+  string nome = 1;
+  string cognome = 2;
+  string email = 3;
+  string password = 4;
+  string telefono = 5;
+}
+
+message RegistrazioneResponse {
+  string jwtToken = 1;
+}
+
+message Voto {
+  string id = 1;
+  string data_ora = 2;
+  string voto = 3;
+  string insegnamento = 4;
+  string studente = 5;
+}
+
+message Libretto {
+  repeated Voto voti = 1;
+}
+
+message LibrettoResponse {
+  Libretto libretto = 1;
+}
+
+message ID {
+  int32 id = 1;
+}
+
+message DoubleID {
+  int32 id1 = 1;
+  int32 id2 = 2;
+}
+
+message GetPianoRequest {
+  int32 id_corso = 1;
+  int32 id_curriculum = 2;
+  string anno = 3;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string jwtToken = 1;
+}
