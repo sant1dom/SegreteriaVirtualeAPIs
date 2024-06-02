@@ -21,13 +21,13 @@ import java.util.List;
 @Setter
 public class PianoDiStudiPrivato extends PianoDiStudi{
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "voto_id")
     private List<Voto> voti;
 
     @ToString.Exclude
     @JsonBackReference
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "studente_id")
     private Studente studente;
 

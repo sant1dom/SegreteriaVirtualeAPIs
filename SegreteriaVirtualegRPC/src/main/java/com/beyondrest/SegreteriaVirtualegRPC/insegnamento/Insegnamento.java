@@ -33,7 +33,7 @@ public class Insegnamento {
     private String orario;
 
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "insegnamento_lezione",
             joinColumns = @JoinColumn(name = "insegnamento_id"),
@@ -42,7 +42,7 @@ public class Insegnamento {
     private List<Lezione> lezioni;
 
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "insegnamento_docente",
             joinColumns = @JoinColumn(name = "insegnamento_id"),
@@ -51,7 +51,7 @@ public class Insegnamento {
     private List<Docente> docenti;
 
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "bacheca",
             joinColumns = @JoinColumn(name = "insegnamento_id"),
@@ -61,13 +61,13 @@ public class Insegnamento {
 
     @ToString.Exclude
     @JsonBackReference
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "appello_id")
     private List<Appello> appelli;
 
     @ToString.Exclude
     @JsonBackReference
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "voto_id")
     private List<Voto> voti;
 

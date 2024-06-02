@@ -5,11 +5,16 @@ import com.beyondrest.SegreteriaVirtualegRPC.docente.DocenteRepository;
 import com.beyondrest.SegreteriaVirtualegRPC.insegnamento.InsegnamentoRepository;
 import com.beyondrest.SegreteriaVirtualegRPC.studente.StudenteRepository;
 import io.grpc.stub.StreamObserver;
+import jakarta.transaction.Transactional;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @GrpcService(interceptors = {JwtServerInterceptor.class})
 public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.SegreteriaVirtualeServiceImplBase {
@@ -18,6 +23,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     private final DocenteRepository docenteRepository;
     private final StudenteRepository studenteRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     SegreteriaVirtualeService(CorsoRepository corsoRepository, InsegnamentoRepository insegnamentoRepository, DocenteRepository docenteRepository, StudenteRepository studenteRepository, PasswordEncoder passwordEncoder) {
         this.corsoRepository = corsoRepository;
@@ -52,8 +58,10 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     }
 
     @Override
+    @Transactional
     public void getCurricula(ID request, StreamObserver<CurriculaResponse> responseObserver) {
         com.beyondrest.SegreteriaVirtualegRPC.corso.Corso corso = corsoRepository.findById((long) request.getId()).orElseThrow();
+        Hibernate.initialize(corso.getCurricula());
         var curriculaResponse = CurriculaResponse.newBuilder().addAllCurricula(corso.getCurricula().stream().map(curriculum -> Curriculum.newBuilder()
                 .setId(String.valueOf(curriculum.getId()))
                 .setNome(curriculum.getNome())
@@ -65,7 +73,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
 
     @Override
     public void getCurriculum(DoubleID request, StreamObserver<CurriculumResponse> responseObserver) {
-        com.beyondrest.SegreteriaVirtualegRPC.corso.Corso corso = corsoRepository.findById((long) request.getId1()).orElseThrow();
+        com.beyondrest.SegreteriaVirtualegRPC.corso.Corso corso = corsoRepository.findByIdWithCurricula((long) request.getId1()).orElseThrow();
         var curriculumResponse = CurriculumResponse.newBuilder().setCurriculum(corso.getCurricula().stream().filter(c -> c.getId() == request.getId2()).map(curriculum -> Curriculum.newBuilder()
                 .setId(String.valueOf(curriculum.getId()))
                 .setNome(curriculum.getNome())
@@ -76,8 +84,9 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     }
 
     @Override
+    @Transactional
     public void getPiano(GetPianoRequest request, StreamObserver<PianoResponse> responseObserver) {
-        var piano = corsoRepository.findById((long) request.getIdCorso())
+        var piano = corsoRepository.findByIdWithCurriculaAndPianiDiStudi((long) request.getIdCorso())
                 .orElseThrow()
                 .getCurricula()
                 .stream()
@@ -100,6 +109,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     }
 
     @Override
+    @Transactional
     public void getInsegnamenti(Empty request, StreamObserver<InsegnamentiResponse> responseObserver) {
         var insegnamenti = insegnamentoRepository.findAll();
         var insegnamentiResponse = InsegnamentiResponse.newBuilder()
@@ -122,6 +132,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     }
 
     @Override
+    @Transactional
     public void getInsegnamento(ID request, StreamObserver<InsegnamentoResponse> responseObserver) {
         var insegnamento = insegnamentoRepository.findById((long) request.getId()).orElseThrow();
         var insegnamentoResponse = Insegnamento.newBuilder()
@@ -137,6 +148,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     }
 
     @Override
+    @Transactional
     public void getLezioni(ID request, StreamObserver<LezioniResponse> responseObserver) {
         var insegnamento = insegnamentoRepository.findById((long) request.getId()).orElseThrow();
         var lezioniResponse = LezioniResponse.newBuilder()
@@ -153,6 +165,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     }
 
     @Override
+    @Transactional
     public void getLezione(DoubleID request, StreamObserver<LezioneResponse> responseObserver) {
         var insegnamento = insegnamentoRepository.findById((long) request.getId1()).orElseThrow();
         var lezione = insegnamento.getLezioni().stream().filter(l -> l.getId() == request.getId2()).findFirst().orElseThrow();
@@ -168,17 +181,37 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
 
     @Override
     public void getMessaggi(ID request, StreamObserver<BachecaResponse> responseObserver) {
-        var messaggi = insegnamentoRepository.findById((long) request.getId()).orElseThrow().getBacheca();
-        var messaggiResponse = BachecaResponse.newBuilder()
-                .addAllBacheca(
-                        messaggi.stream().map(messaggio -> Messaggio.newBuilder()
-                                .setId(String.valueOf(messaggio.getId()))
-                                .setTesto(messaggio.getTesto())
-                                .setDataOra(messaggio.getData().toString())
-                                .setAutore(messaggio.getAutore().getId().toString())
-                                .build()).toList()
-                ).build();
-        responseObserver.onNext(messaggiResponse);
+        long id = request.getId();
+        final long[] lastMessageId = {0}; // Traccia dell'ultimo messaggio inviato
+
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                var messaggi = insegnamentoRepository.findById(id)
+                        .orElseThrow()
+                        .getBacheca();
+
+                List<com.beyondrest.SegreteriaVirtualegRPC.messaggio.Messaggio> nuoviMessaggi = messaggi.stream()
+                        .filter(messaggio -> messaggio.getId() > lastMessageId[0])
+                        .toList();
+
+                if (!nuoviMessaggi.isEmpty()) {
+                    lastMessageId[0] = nuoviMessaggi.get(nuoviMessaggi.size() - 1).getId();
+                    var messaggiResponse = BachecaResponse.newBuilder()
+                            .addAllMessaggio(
+                                    nuoviMessaggi.stream().map(messaggio -> Messaggio.newBuilder()
+                                            .setId(String.valueOf(messaggio.getId()))
+                                            .setTesto(messaggio.getTesto())
+                                            .setDataOra(messaggio.getData().toString())
+                                            .setAutore(messaggio.getAutore().getId().toString())
+                                            .build()).toList()
+                            ).build();
+
+                    responseObserver.onNext(messaggiResponse);
+                }
+            } catch (Exception e) {
+                responseObserver.onError(new RuntimeException("Errore durante il recupero dei messaggi", e));
+            }
+        }, 0, 10, TimeUnit.SECONDS); // Esegui ogni 10 secondi
         responseObserver.onCompleted();
     }
 
@@ -196,6 +229,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     }
 
     @Override
+    @Transactional
     public void getAppelli(ID request, StreamObserver<AppelliResponse> responseObserver) {
         var appelli = insegnamentoRepository.findById((long) request.getId()).orElseThrow().getAppelli();
         var appelliResponse = AppelliResponse.newBuilder()
@@ -216,6 +250,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     }
 
     @Override
+    @Transactional
     public void getAppello(DoubleID request, StreamObserver<AppelloResponse> responseObserver) {
         var insegnamento = insegnamentoRepository.findById((long) request.getId1()).orElseThrow();
         var appello = insegnamento.getAppelli().stream().filter(a -> a.getId() == request.getId2()).findFirst().orElseThrow();
@@ -233,6 +268,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     }
 
     @Override
+    @Transactional
     public void registraAppello(CreateAppelloRequest request, StreamObserver<AppelloResponse> responseObserver) {
         var client = Constant.CLIENT_ID_CONTEXT_KEY;
         var studente = studenteRepository.findById(Long.parseLong(client.get())).orElseThrow();
@@ -292,6 +328,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
     }
 
     @Override
+    @Transactional
     public void getLibretto(Empty request, StreamObserver<LibrettoResponse> responseObserver) {
         var client = Constant.CLIENT_ID_CONTEXT_KEY;
         var studente = studenteRepository.findById(Long.parseLong(client.get())).orElseThrow();

@@ -32,12 +32,12 @@ public class Appello {
     private Date data;
     private String aula;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "insegnamento_id")
     @JsonBackReference
     private Insegnamento insegnamento;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "appello_studente",
             joinColumns = @JoinColumn(name = "appello_id"),

@@ -1,0 +1,2 @@
+schema: segreteriavirtuale.graphqls
+documents: '**/*.graphqls'

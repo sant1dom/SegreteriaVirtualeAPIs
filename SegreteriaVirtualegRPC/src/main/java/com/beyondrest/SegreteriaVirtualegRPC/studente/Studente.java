@@ -37,7 +37,7 @@ public class Studente {
     private String matricola;
     @Column(unique = true)
     private String username;
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "piano_id")
     @JsonBackReference
     @ToString.Exclude

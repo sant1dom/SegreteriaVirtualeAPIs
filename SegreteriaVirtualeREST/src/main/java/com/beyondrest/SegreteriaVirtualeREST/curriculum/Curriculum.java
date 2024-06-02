@@ -21,7 +21,8 @@ public class Curriculum {
     private @Id @GeneratedValue Long id;
     private String nome;
     private String descrizione;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JsonBackReference
+    @ToString.Exclude
     private List<PianoDiStudi> pianoDiStudi;
 }

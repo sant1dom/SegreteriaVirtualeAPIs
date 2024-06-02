@@ -1,0 +1,126 @@
+type Appello {
+    id: ID!
+    data: String!
+    aula: String!
+    insegnamento: Insegnamento!
+    iscritti: [Studente]!
+}
+
+type Corso {
+    id: ID!
+    nome: String!
+    descrizione: String!
+    anno: String!
+    curricula: [Curriculum]!
+}
+
+type Curriculum {
+    id: ID!
+    nome: String!
+    descrizione: String!
+    pianoDiStudi: [PianoDiStudi]!
+}
+
+type Docente {
+    id: ID!
+    nome: String!
+    cognome: String!
+    email: String!
+    telefono: String!
+    insegnamenti: [Insegnamento]!
+}
+
+type Insegnamento {
+    id: ID!
+    nome: String!
+    descrizione: String!
+    cfu: Int!
+    anno: String!
+    orario: String!
+    lezioni: [Lezione]!
+    docenti: [Docente]!
+    bacheca: [Messaggio]!
+    appelli: [Appello]!
+}
+
+type Lezione {
+    id: ID!
+    data: String!
+    diarioDellaLezione: String!
+    insegnamento: Insegnamento!
+}
+
+type Messaggio {
+    id: ID!
+    data: String!
+    testo: String!
+    titolo: String!
+    autore: Docente!
+}
+
+type PianoDiStudi {
+    id: ID!
+    anno: String!
+    insegnamenti: [Insegnamento]!
+}
+
+type PianoDiStudiPrivato {
+    id: ID!
+    anno: String!
+    insegnamenti: [Insegnamento]!
+    voti: [Voto]!
+    studente: Studente!
+}
+
+type Studente {
+    id: ID!
+    nome: String!
+    cognome: String!
+    email: String!
+    matricola: String!
+    username: String!
+    pianoDiStudiPrivato: [PianoDiStudiPrivato]!
+    ruoli: [Ruolo]!
+}
+
+enum Ruolo {
+    STUDENTE
+    DOCENTE
+    ADMIN
+}
+
+type Voto {
+    id: ID!
+    data: String!
+    votazione: String!
+    insegnamento: Insegnamento!
+    studente: Studente!
+}
+
+type Query {
+    corsi: [Corso]!
+    corso(id: ID!): Corso
+    curricula(corsoId: ID!): [Curriculum]!
+    curriculum(corsoId: ID!, id: ID!): Curriculum
+    pianoDiStudi(corsoId: ID!, curriculumId: ID!, anno: String!): PianoDiStudi
+    insegnamenti: [Insegnamento]!
+    insegnamento(id: ID!): Insegnamento
+    lezioni(insegnamentoId: ID!): [Lezione]!
+    lezione(insegnamentoId: ID!, id: ID!): Lezione
+    messaggi(insegnamentoId: ID!): [Messaggio]!
+    messaggio(insegnamentoId: ID!, id: ID!): Messaggio
+    appelli(insegnamentoId: ID!): [Appello]!
+    appello(insegnamentoId: ID!, id: ID!): Appello
+    docenti: [Docente]!
+    docente(id: ID!): Docente
+    libretto: PianoDiStudiPrivato
+    login(username: String!, password: String!): String
+}
+
+type Mutation {
+    registrazione(nome: String!, cognome: String!, email: String!, matricola: String!, username: String!, password: String!): Studente
+}
+
+type Subscription {
+    messaggiSubscription(insegnamentoId: ID!): [Messaggio]!
+}

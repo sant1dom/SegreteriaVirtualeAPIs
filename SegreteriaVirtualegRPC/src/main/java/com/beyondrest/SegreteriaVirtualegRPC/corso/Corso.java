@@ -25,7 +25,7 @@ public class Corso {
     private String nome;
     private String descrizione;
     private String anno;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Curriculum> curricula;
 }

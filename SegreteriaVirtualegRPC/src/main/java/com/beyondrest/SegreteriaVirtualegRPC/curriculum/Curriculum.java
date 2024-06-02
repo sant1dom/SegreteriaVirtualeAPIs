@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "curricula")
 @Builder
@@ -21,7 +23,8 @@ public class Curriculum {
     private @Id @GeneratedValue Long id;
     private String nome;
     private String descrizione;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<PianoDiStudi> pianoDiStudi;
+    @ToString.Exclude
+    private Set<PianoDiStudi> pianoDiStudi;
 }

@@ -29,11 +29,11 @@ public class Voto {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private Date data;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "insegnamento_id")
     private Insegnamento insegnamento;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "studente_id")
     @JsonBackReference
     private Studente studente;

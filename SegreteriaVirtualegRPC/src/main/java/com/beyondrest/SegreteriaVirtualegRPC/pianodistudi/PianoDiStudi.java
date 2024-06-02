@@ -22,7 +22,7 @@ public class PianoDiStudi {
     @JsonIgnore
     private @Id @GeneratedValue Long id;
     private String anno;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "piano_di_studi_insegnamento",
             joinColumns = @JoinColumn(name = "piano_di_studi_id"),

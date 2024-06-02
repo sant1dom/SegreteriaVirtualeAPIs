@@ -22,7 +22,7 @@ public class Lezione {
     @JsonFormat(pattern = "HH:mm:ss dd/MM/yyyy")
     private Date data;
     private String diarioDellaLezione;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "insegnamento_id")
     @JsonBackReference
     private Insegnamento insegnamento;

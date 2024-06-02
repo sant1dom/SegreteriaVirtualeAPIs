@@ -22,12 +22,13 @@ public class PianoDiStudi {
     @JsonIgnore
     private @Id @GeneratedValue Long id;
     private String anno;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "piano_di_studi_insegnamento",
             joinColumns = @JoinColumn(name = "piano_di_studi_id"),
             inverseJoinColumns = @JoinColumn(name = "insegnamento_id"))
     @JsonBackReference
+    @ToString.Exclude
     private List<Insegnamento> insegnamenti;
 
     public PianoDiStudi(String anno, List<Insegnamento> insegnamenti) {

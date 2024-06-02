@@ -25,11 +25,12 @@ public class Docente {
     private String telefono;
 
     @JsonBackReference
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "insegnamento_docente",
             joinColumns = @JoinColumn(name = "docente_id"),
             inverseJoinColumns = @JoinColumn(name = "insegnamento_id"))
+    @ToString.Exclude
     private List<Insegnamento> insegnamenti;
 
     public Docente(String nome, String cognome, String email, String telefono) {

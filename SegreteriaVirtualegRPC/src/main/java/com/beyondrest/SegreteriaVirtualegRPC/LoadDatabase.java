@@ -31,10 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Configuration
 class LoadDatabase {
@@ -43,21 +40,21 @@ class LoadDatabase {
 
     @Bean
     CommandLineRunner initDatabase(CorsoRepository corsoRepository,
-                      CurriculumRepository curriculumRepository,
-                      InsegnamentoRepository insegnamentoRepository,
-                      DocenteRepository docenteRepository,
-                      MessaggioRepository messaggioRepository,
-                      LezioneRepository lezioneRepository,
-                      PianoDiStudiRepository pianoDiStudiRepository,
-                      AppelloRepository appelloRepository,
-                      StudenteRepository studenteRepository,
-                      PianoDiStudiPrivatoRepository pianoDiStudiPrivatoRepository,
-                      VotoRepository votoRepository
+                                   CurriculumRepository curriculumRepository,
+                                   InsegnamentoRepository insegnamentoRepository,
+                                   DocenteRepository docenteRepository,
+                                   MessaggioRepository messaggioRepository,
+                                   LezioneRepository lezioneRepository,
+                                   PianoDiStudiRepository pianoDiStudiRepository,
+                                   AppelloRepository appelloRepository,
+                                   StudenteRepository studenteRepository,
+                                   PianoDiStudiPrivatoRepository pianoDiStudiPrivatoRepository,
+                                   VotoRepository votoRepository
     ) {
         return args -> {
             initializeDocenti(docenteRepository);
-            initializeMessaggi(messaggioRepository, docenteRepository);
             initializeLezioni(lezioneRepository);
+            initializeMessaggi(messaggioRepository, docenteRepository);
             initializeInsegnamenti(insegnamentoRepository, docenteRepository, messaggioRepository, lezioneRepository);
             initializeAppelli(insegnamentoRepository, appelloRepository);
             initializePianoDiStudi(pianoDiStudiRepository, insegnamentoRepository);
@@ -91,12 +88,13 @@ class LoadDatabase {
         }
     }
 
+
     private static void initializeAppelli(InsegnamentoRepository insegnamentoRepository, AppelloRepository appelloRepository) {
         for (int i = 1; i <= 6; i++) {
             var insegnamento = insegnamentoRepository.findById((long) i).orElseGet(Insegnamento::new);
             var appello = new Appello(new Date(System.currentTimeMillis()), "Aula A1." + i + " Coppito 0", insegnamento);
             log.info("Preloading " + appelloRepository.save(appello));
-            insegnamento.getAppelli().add(appello);
+            insegnamento.setAppelli(List.of(appello));
             insegnamentoRepository.save(insegnamento);
         }
     }
@@ -194,17 +192,17 @@ class LoadDatabase {
         log.info("Preloading " + repository.save(new Curriculum(1L,
                 "Advanced Software Engineering",
                 "Corso di informatica",
-                List.of(pianoDiStudiRepository.findById(1L).orElseGet(PianoDiStudi::new))
+                Set.of(pianoDiStudiRepository.findById(1L).orElseGet(PianoDiStudi::new))
         )));
         log.info("Preloading " + repository.save(new Curriculum(2L,
                 "Advanced Mathematics",
                 "Corso di matematica",
-                List.of(pianoDiStudiRepository.findById(2L).orElseGet(PianoDiStudi::new))
+                Set.of(pianoDiStudiRepository.findById(2L).orElseGet(PianoDiStudi::new))
         )));
         log.info("Preloading " + repository.save(new Curriculum(3L,
                 "Advanced Physics",
                 "Corso di fisica",
-                List.of(pianoDiStudiRepository.findById(3L).orElseGet(PianoDiStudi::new))
+                Set.of(pianoDiStudiRepository.findById(3L).orElseGet(PianoDiStudi::new))
         )));
     }
 

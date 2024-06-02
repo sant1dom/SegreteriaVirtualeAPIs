@@ -15,7 +15,7 @@ service SegreteriaVirtualeService {
     rpc GetInsegnamento(ID) returns (InsegnamentoResponse) {}
     rpc GetLezioni(ID) returns (LezioniResponse) {}
     rpc GetLezione(DoubleID) returns (LezioneResponse) {}
-    rpc GetMessaggi(ID) returns (BachecaResponse) {}
+    rpc GetMessaggi(ID) returns (stream BachecaResponse) {}
     rpc GetMessaggio(DoubleID) returns (MessaggioResponse) {}
     rpc GetAppelli(ID) returns (AppelliResponse) {}
     rpc GetAppello(DoubleID) returns (AppelloResponse) {}
@@ -125,7 +125,7 @@ message Messaggio {
 }
 
 message BachecaResponse {
-    repeated Messaggio bacheca = 1;
+    repeated Messaggio messaggio = 1;
 }
 
 message MessaggioResponse {
