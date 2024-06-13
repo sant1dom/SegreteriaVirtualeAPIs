@@ -18,7 +18,7 @@ type Curriculum {
     id: ID!
     nome: String!
     descrizione: String!
-    pianoDiStudi: [PianoDiStudi]!
+    pianiDiStudi: [PianoDiStudi]!
 }
 
 type Docente {
@@ -56,6 +56,7 @@ type Messaggio {
     testo: String!
     titolo: String!
     autore: Docente!
+    insegnamenti: [Insegnamento]!
 }
 
 type PianoDiStudi {
@@ -79,14 +80,6 @@ type Studente {
     email: String!
     matricola: String!
     username: String!
-    pianoDiStudiPrivato: [PianoDiStudiPrivato]!
-    ruoli: [Ruolo]!
-}
-
-enum Ruolo {
-    STUDENTE
-    DOCENTE
-    ADMIN
 }
 
 type Voto {

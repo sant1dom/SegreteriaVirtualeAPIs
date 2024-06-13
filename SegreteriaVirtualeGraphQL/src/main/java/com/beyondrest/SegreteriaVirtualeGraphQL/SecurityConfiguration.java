@@ -1,5 +1,13 @@
 package com.beyondrest.SegreteriaVirtualeGraphQL;
 
+import graphql.GraphQL;
+import graphql.analysis.MaxQueryComplexityInstrumentation;
+import graphql.analysis.MaxQueryDepthInstrumentation;
+import graphql.schema.GraphQLCodeRegistry;
+import graphql.schema.GraphQLSchema;
+import graphql.schema.idl.RuntimeWiring;
+import graphql.schema.visibility.BlockedFields;
+import graphql.schema.visibility.GraphqlFieldVisibility;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,5 +43,10 @@ public class SecurityConfiguration {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    @Bean
+    public MaxQueryDepthInstrumentation maxQueryDepthInstrumentation() {
+        return new MaxQueryDepthInstrumentation(5);
     }
 }

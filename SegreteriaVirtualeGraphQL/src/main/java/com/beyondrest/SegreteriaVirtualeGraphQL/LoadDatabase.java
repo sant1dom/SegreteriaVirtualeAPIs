@@ -31,10 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Configuration
 class LoadDatabase {
@@ -63,14 +60,15 @@ class LoadDatabase {
             initializePianoDiStudi(pianoDiStudiRepository, insegnamentoRepository);
             initializeCurricula(curriculumRepository, insegnamentoRepository, pianoDiStudiRepository);
             initializeCorsi(corsoRepository, curriculumRepository);
-            initializeStudenti(studenteRepository, insegnamentoRepository, pianoDiStudiPrivatoRepository, votoRepository);
+            initializeStudenti(studenteRepository, insegnamentoRepository, pianoDiStudiPrivatoRepository, votoRepository, appelloRepository);
         };
     }
 
     private static void initializeStudenti(StudenteRepository studenteRepository,
                                            InsegnamentoRepository insegnamentoRepository,
                                            PianoDiStudiPrivatoRepository pianoDiStudiPrivatoRepository,
-                                           VotoRepository votoRepository) {
+                                           VotoRepository votoRepository,
+                                           AppelloRepository appelloRepository) {
         var names = List.of("Mario", "Luca", "Giuseppe", "Giovanni");
         var surnames = List.of("Rossi", "Bianchi", "Verdi", "Neri");
         for (int i = 0; i < 4; i++) {
@@ -89,6 +87,12 @@ class LoadDatabase {
             std.setPianoDiStudiPrivato(pdsp);
             log.info("Preloading " + studenteRepository.save(std));
         }
+        var studenti = studenteRepository.findAll();
+        var appelli = appelloRepository.findAll();
+        studenti.forEach(studente -> {
+            studente.setAppelli(new HashSet<>(appelli));
+            studenteRepository.save(studente);
+        });
     }
 
 
@@ -103,9 +107,9 @@ class LoadDatabase {
     }
 
     private static void initializePianoDiStudi(PianoDiStudiRepository pianoDiStudiRepository, InsegnamentoRepository insegnamentoRepository) {
-        log.info("Preloading " + pianoDiStudiRepository.save(new PianoDiStudi(1L, "2023-2024", List.of(insegnamentoRepository.findById(5L).orElseGet(Insegnamento::new), insegnamentoRepository.findById(6L).orElseGet(Insegnamento::new)))));
-        log.info("Preloading " + pianoDiStudiRepository.save(new PianoDiStudi(2L, "2024-2025", List.of(insegnamentoRepository.findById(1L).orElseGet(Insegnamento::new), insegnamentoRepository.findById(2L).orElseGet(Insegnamento::new)))));
-        log.info("Preloading " + pianoDiStudiRepository.save(new PianoDiStudi(3L, "2024-2025", List.of(insegnamentoRepository.findById(3L).orElseGet(Insegnamento::new), insegnamentoRepository.findById(4L).orElseGet(Insegnamento::new)))));
+        log.info("Preloading " + pianoDiStudiRepository.save(new PianoDiStudi(1L, "2023-2024", List.of(insegnamentoRepository.findById(5L).orElseGet(Insegnamento::new), insegnamentoRepository.findById(6L).orElseGet(Insegnamento::new)), null)));
+        log.info("Preloading " + pianoDiStudiRepository.save(new PianoDiStudi(2L, "2024-2025", List.of(insegnamentoRepository.findById(1L).orElseGet(Insegnamento::new), insegnamentoRepository.findById(2L).orElseGet(Insegnamento::new)), null)));
+        log.info("Preloading " + pianoDiStudiRepository.save(new PianoDiStudi(3L, "2024-2025", List.of(insegnamentoRepository.findById(3L).orElseGet(Insegnamento::new), insegnamentoRepository.findById(4L).orElseGet(Insegnamento::new)), null)));
     }
 
     private static void initializeLezioni(LezioneRepository lezioneRepository) {
@@ -198,17 +202,20 @@ class LoadDatabase {
         log.info("Preloading " + repository.save(new Curriculum(1L,
                 "Advanced Software Engineering",
                 "Corso di informatica",
-                List.of(pianoDiStudiRepository.findById(1L).orElseGet(PianoDiStudi::new))
+                List.of(pianoDiStudiRepository.findById(1L).orElseGet(PianoDiStudi::new)),
+                null
         )));
         log.info("Preloading " + repository.save(new Curriculum(2L,
                 "Advanced Mathematics",
                 "Corso di matematica",
-                List.of(pianoDiStudiRepository.findById(2L).orElseGet(PianoDiStudi::new))
+                List.of(pianoDiStudiRepository.findById(2L).orElseGet(PianoDiStudi::new)),
+                null
         )));
         log.info("Preloading " + repository.save(new Curriculum(3L,
                 "Advanced Physics",
                 "Corso di fisica",
-                List.of(pianoDiStudiRepository.findById(3L).orElseGet(PianoDiStudi::new))
+                List.of(pianoDiStudiRepository.findById(3L).orElseGet(PianoDiStudi::new)),
+                null
         )));
     }
 

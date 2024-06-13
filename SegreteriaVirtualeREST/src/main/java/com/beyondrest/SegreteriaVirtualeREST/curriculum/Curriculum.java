@@ -8,7 +8,7 @@ import lombok.*;
 
 import java.util.List;
 @Entity
-@Table(name = "curricula")
+@Table(name = "curriculum")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,5 +24,5 @@ public class Curriculum {
     @OneToMany(fetch = FetchType.LAZY)
     @JsonBackReference
     @ToString.Exclude
-    private List<PianoDiStudi> pianoDiStudi;
+    private List<PianoDiStudi> pianiDiStudi;
 }

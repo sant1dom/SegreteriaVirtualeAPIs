@@ -9,6 +9,6 @@ public interface CorsoRepository extends JpaRepository<Corso, Long> {
     @Query("SELECT c FROM Corso c JOIN FETCH c.curricula WHERE c.id = :id")
     public Optional<Corso> findByIdWithCurricula(Long id);
 
-    @Query("SELECT c FROM Corso c JOIN FETCH c.curricula cur JOIN FETCH cur.pianoDiStudi WHERE c.id = :id")
+    @Query("SELECT c FROM Corso c JOIN FETCH c.curricula cur JOIN FETCH cur.pianiDiStudi WHERE c.id = :id")
     public Optional<Corso> findByIdWithCurriculaAndPianiDiStudi(Long id);
 }

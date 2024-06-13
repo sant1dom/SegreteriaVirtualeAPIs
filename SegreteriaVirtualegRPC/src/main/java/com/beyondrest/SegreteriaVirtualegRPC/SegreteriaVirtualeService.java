@@ -93,7 +93,7 @@ public class SegreteriaVirtualeService extends SegreteriaVirtualeServiceGrpc.Seg
                 .filter(curriculum -> curriculum.getId().equals((long) request.getIdCurriculum()))
                 .findFirst()
                 .orElseThrow()
-                .getPianoDiStudi()
+                .getPianiDiStudi()
                 .stream()
                 .filter(pianoDiStudi -> pianoDiStudi.getAnno().equals(request.getAnno()));
         var pianoResponse = PianoResponse.newBuilder().setPiano(piano.map(pianoDiStudi -> Piano.newBuilder()

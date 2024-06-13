@@ -23,7 +23,7 @@ public class Messaggio {
     private String testo;
     @Temporal(TemporalType.DATE)
     private Date data;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "docente_id")
     @ToString.Exclude
     private Docente autore;

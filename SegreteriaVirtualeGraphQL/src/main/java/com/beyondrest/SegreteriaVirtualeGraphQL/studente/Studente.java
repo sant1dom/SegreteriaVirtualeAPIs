@@ -1,5 +1,6 @@
 package com.beyondrest.SegreteriaVirtualeGraphQL.studente;
 
+import com.beyondrest.SegreteriaVirtualeGraphQL.appello.Appello;
 import com.beyondrest.SegreteriaVirtualeGraphQL.pianodistudi.PianoDiStudiPrivato;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -38,6 +39,15 @@ public class Studente {
     @ToString.Exclude
     private PianoDiStudiPrivato pianoDiStudiPrivato;
     private Set<Ruolo> ruoli = Set.of(Ruolo.ROLE_STUDENTE);
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "appello_studente",
+            joinColumns = @JoinColumn(name = "studente_id"),
+            inverseJoinColumns = @JoinColumn(name = "appello_id"))
+    @JsonBackReference
+    @ToString.Exclude
+    private Set<Appello> appelli;
 
     public Studente(String nome, String cognome, String email, String matricola, String password) {
         this.nome = nome;

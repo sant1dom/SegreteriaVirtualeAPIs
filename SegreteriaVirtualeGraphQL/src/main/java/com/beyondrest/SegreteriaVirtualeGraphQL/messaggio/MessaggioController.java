@@ -2,6 +2,7 @@ package com.beyondrest.SegreteriaVirtualeGraphQL.messaggio;
 
 import com.beyondrest.SegreteriaVirtualeGraphQL.docente.Docente;
 import com.beyondrest.SegreteriaVirtualeGraphQL.docente.DocenteRepository;
+import com.beyondrest.SegreteriaVirtualeGraphQL.insegnamento.Insegnamento;
 import com.beyondrest.SegreteriaVirtualeGraphQL.insegnamento.InsegnamentoRepository;
 import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
@@ -43,10 +44,12 @@ public class MessaggioController {
                 .orElseThrow();
     }
 
-    @BatchMapping(field = "autore")
-    public Map<Messaggio, Docente> docente(List<Messaggio> messaggi) {
-        var messaggiMap = docenteRepository.findAllByMessaggi(messaggi).stream().collect(Collectors.toMap(Docente::getId, docente -> docente));
-        return messaggi.stream().collect(Collectors.toMap(messaggio -> messaggio, messaggio -> messaggiMap.get(messaggio.getAutore().getId())));
+    @BatchMapping(field = "insegnamenti")
+    public Map<Messaggio, List<Insegnamento>> insegnamenti(List<Messaggio> messaggi) {
+        var insegnamenti = insegnamentoRepository.findAllByMessaggi(messaggi);
+        return messaggi.stream().collect(Collectors.toMap(messaggio -> messaggio, messaggio -> insegnamenti.stream()
+                .filter(insegnamento -> insegnamento.getBacheca().contains(messaggio))
+                .collect(Collectors.toList())));
     }
 
     @SubscriptionMapping

@@ -1,6 +1,5 @@
 package com.beyondrest.SegreteriaVirtualeGraphQL.messaggio;
 
-import com.beyondrest.SegreteriaVirtualeGraphQL.docente.Docente;
 import com.beyondrest.SegreteriaVirtualeGraphQL.insegnamento.Insegnamento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

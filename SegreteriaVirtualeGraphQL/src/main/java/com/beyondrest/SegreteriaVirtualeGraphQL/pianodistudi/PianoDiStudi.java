@@ -1,5 +1,6 @@
 package com.beyondrest.SegreteriaVirtualeGraphQL.pianodistudi;
 
+import com.beyondrest.SegreteriaVirtualeGraphQL.curriculum.Curriculum;
 import com.beyondrest.SegreteriaVirtualeGraphQL.insegnamento.Insegnamento;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,6 +31,11 @@ public class PianoDiStudi {
     @JsonBackReference
     @ToString.Exclude
     private List<Insegnamento> insegnamenti;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "curriculum_id")
+    @JsonBackReference
+    @ToString.Exclude
+    private Curriculum curriculum;
 
     public PianoDiStudi(String anno, List<Insegnamento> insegnamenti) {
         this.anno = anno;

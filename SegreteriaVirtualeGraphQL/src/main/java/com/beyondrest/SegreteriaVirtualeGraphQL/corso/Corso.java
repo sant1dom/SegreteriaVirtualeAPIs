@@ -26,6 +26,7 @@ public class Corso {
     private String descrizione;
     private String anno;
     @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "corso_id")
     @JsonBackReference
     @ToString.Exclude
     private List<Curriculum> curricula;

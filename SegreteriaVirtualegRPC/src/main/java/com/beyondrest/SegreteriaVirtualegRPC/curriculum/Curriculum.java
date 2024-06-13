@@ -6,11 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "curricula")
+@Table(name = "curriculum")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,5 +25,5 @@ public class Curriculum {
     @OneToMany(fetch = FetchType.LAZY)
     @JsonBackReference
     @ToString.Exclude
-    private Set<PianoDiStudi> pianoDiStudi;
+    private Set<PianoDiStudi> pianiDiStudi;
 }

@@ -31,7 +31,7 @@ public class Appello {
     private Date data;
     private String aula;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "insegnamento_id")
     @JsonBackReference
     private Insegnamento insegnamento;

@@ -84,7 +84,7 @@ public class CorsoController {
                         linkTo(methodOn(CorsoController.class).getCurricula(id)).withSelfRel()))
                 .map(entityModel -> {
                     var curricula = entityModel.getContent();
-                    Objects.requireNonNull(curricula).getPianoDiStudi().forEach(pianoDiStudi -> entityModel.add(linkTo(methodOn(PianoDiStudiController.class).getPianoDiStudi(id, curriculumId, pianoDiStudi.getAnno())).withRel("piani_di_studio")));
+                    Objects.requireNonNull(curricula).getPianiDiStudi().forEach(pianoDiStudi -> entityModel.add(linkTo(methodOn(PianoDiStudiController.class).getPianoDiStudi(id, curriculumId, pianoDiStudi.getAnno())).withRel("piani_di_studio")));
                     return entityModel;
                 })
                 .orElseThrow(() -> new CurriculumNotFoundException(curriculumId));

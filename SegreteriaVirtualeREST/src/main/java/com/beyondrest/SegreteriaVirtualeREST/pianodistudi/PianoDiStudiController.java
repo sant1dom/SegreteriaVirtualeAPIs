@@ -34,10 +34,10 @@ public class PianoDiStudiController {
                 .orElseThrow(() -> new CorsoController.CorsoNotFoundException(id))
                 .getCurricula()
                 .stream()
-                .filter(curricula -> curricula.getId().equals(curriculaId) && curricula.getPianoDiStudi().stream().anyMatch(pianoDiStudi -> pianoDiStudi.getAnno().equals(anno)))
+                .filter(curricula -> curricula.getId().equals(curriculaId) && curricula.getPianiDiStudi().stream().anyMatch(pianoDiStudi -> pianoDiStudi.getAnno().equals(anno)))
                 .findFirst()
                 .orElseThrow(() -> new CorsoController.CurriculumNotFoundException(curriculaId))
-                .getPianoDiStudi()
+                .getPianiDiStudi()
                 .stream()
                 .filter(pianoDiStudi -> pianoDiStudi.getAnno().equals(anno))
                 .map(pianoDiStudi -> EntityModel.of(pianoDiStudi,

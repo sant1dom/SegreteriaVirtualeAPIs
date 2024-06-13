@@ -1,5 +1,6 @@
 package com.beyondrest.SegreteriaVirtualeGraphQL.curriculum;
 
+import com.beyondrest.SegreteriaVirtualeGraphQL.corso.Corso;
 import com.beyondrest.SegreteriaVirtualeGraphQL.pianodistudi.PianoDiStudi;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,7 +9,7 @@ import lombok.*;
 
 import java.util.List;
 @Entity
-@Table(name = "curricula")
+@Table(name = "curriculum")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,5 +25,9 @@ public class Curriculum {
     @OneToMany(fetch = FetchType.LAZY)
     @JsonBackReference
     @ToString.Exclude
-    private List<PianoDiStudi> pianoDiStudi;
+    private List<PianoDiStudi> pianiDiStudi;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "corso_id")
+    @JsonBackReference
+    private Corso corso;
 }

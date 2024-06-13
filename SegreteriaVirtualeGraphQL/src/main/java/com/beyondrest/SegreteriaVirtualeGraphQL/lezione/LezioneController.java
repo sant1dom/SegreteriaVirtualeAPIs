@@ -1,11 +1,15 @@
 package com.beyondrest.SegreteriaVirtualeGraphQL.lezione;
 
+import com.beyondrest.SegreteriaVirtualeGraphQL.insegnamento.Insegnamento;
 import com.beyondrest.SegreteriaVirtualeGraphQL.insegnamento.InsegnamentoRepository;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class LezioneController {
